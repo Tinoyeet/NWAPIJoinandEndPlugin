@@ -12,17 +12,20 @@ namespace NWAPITestPlugin
 {
     public class Plugin
     {
-        [PluginEntryPoint("Welcome", "1.2.0", "Test.", "Tino")]
+        [PluginEntryPoint("Welcome", "1.3.1", "It will send a Message to each Player when the player connects and when the Round ends.", "Tino")]
         void Enabled()
         {
             EventManager.RegisterEvents(this);
         }
 
-          [PluginEvent(ServerEventType.PlayerJoined)]
-          void OnPlayerJoin(Player player)
-         {
-         player.ReceiveHint(Config.Welcome.Replace("%playername%", player.Nickname), Config.Duration);
-         }
+        [PluginEvent(ServerEventType.PlayerJoined)]
+        void OnPlayerJoin(Player player)
+        {
+            if (Config.WelcomeType)
+                    Broadcast.Singleton.TargetAddElement(player.ReferenceHub.characterClassManager.connectionToClient, Config.Welcome.Replace("%playername%", player.Nickname), Config.Duration, Broadcast.BroadcastFlags.Normal);
+                else
+                    player.ReceiveHint(Config.Welcome.Replace("%playername%", player.Nickname), Config.Duration);
+        }
 
         [PluginEvent(ServerEventType.RoundEnd)]
         void OnRoundEnd(RoundSummary.LeadingTeam curLeadingTeam)
